@@ -30,6 +30,7 @@ dbConnect();
 
 // mongodb document collections
 const tasksCollection = client.db("taskManagement").collection("tasks");
+const completedCollection = client.db("taskManagement").collection("completed");
 const usersCollection = client.db("taskManagement").collection("users");
 
 // post tasks data
@@ -89,7 +90,7 @@ app.get('/task/:id', async (req, res) => {
 });
 
 // update a specific task
-app.put("user/task/update/:id", async (req, res) => {
+app.put("/task/update/:id", async (req, res) => {
   try {
     const id = req.params.id;
     const query = { _id: ObjectId(id) };
@@ -102,7 +103,7 @@ app.put("user/task/update/:id", async (req, res) => {
 
     const updatedTask = await tasksCollection.updateOne(query, updatedDoc, options);
 
-    res.send(updatedDoc);
+    res.send(updatedTask);
 
   } catch (error) {
     res.send({
@@ -113,11 +114,11 @@ app.put("user/task/update/:id", async (req, res) => {
 })
 
 // delete a specific task
-app.delete("/user/task/delete/:id", async (req, res) => {
+app.delete("/task/delete/:id", async (req, res) => {
   try {
     const id = req.params.id;
     const query = { _id: ObjectId(id) };
-    const result = tasksCollection.deleteOne(query);
+    const result = await tasksCollection.deleteOne(query);
 
     res.send(result);
 
@@ -128,6 +129,33 @@ app.delete("/user/task/delete/:id", async (req, res) => {
     })
   }
 });
+
+// app.put('/completed', async (req, res) => {
+//   try {
+//     const query 
+//   } catch (error) {
+//     res.send({
+//       success: false,
+//       error: error.message
+//     })
+//   }
+// })
+
+// completed task
+// app.post('/completed', async (req, res) => {
+//   try {
+//     const completedTask = req.body;
+//     const result = await completedCollection.insertOne(completedTask);
+//     res.send(result);
+//   } catch (error) {
+//     res.send({
+//       success: false,
+//       error: error.message
+//     })
+//   }
+// });
+
+
 
 // default get
 app.get('/', (req, res) => {
