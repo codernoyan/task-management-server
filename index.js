@@ -31,7 +31,7 @@ dbConnect();
 // mongodb document collections
 const tasksCollection = client.db("taskManagement").collection("tasks");
 const completedCollection = client.db("taskManagement").collection("completed");
-const usersCollection = client.db("taskManagement").collection("users");
+const commentsCollection = client.db("taskManagement").collection("comments");
 
 // post tasks data
 app.post("/tasks", async (req, res) => {
@@ -71,6 +71,25 @@ app.get("/tasks", async (req, res) => {
     })
   }
 });
+
+// get completed tasks
+app.get('/tasks/completed/:email', async (req, res) => {
+  try {
+    const email = req.params.email;
+    const status = req.params.status;
+    const query = { status: 'completed', userEmail: email };
+    const cursor = tasksCollection.find(query);
+    const result = await cursor.toArray();
+
+    res.send(result);
+
+  } catch (error) {
+    res.send({
+      success: false,
+      error: error.message
+    })
+  }
+})
 
 // get a single task
 app.get('/task/:id', async (req, res) => {
@@ -130,32 +149,38 @@ app.delete("/task/delete/:id", async (req, res) => {
   }
 });
 
-// app.put('/completed', async (req, res) => {
-//   try {
-//     const query 
-//   } catch (error) {
-//     res.send({
-//       success: false,
-//       error: error.message
-//     })
-//   }
-// })
+// comments
+app.post('/task/comments', async (req, res) => {
+  try {
+    const commentData = req.body;
+    const result = await commentsCollection.insertOne(commentData);
 
-// completed task
-// app.post('/completed', async (req, res) => {
-//   try {
-//     const completedTask = req.body;
-//     const result = await completedCollection.insertOne(completedTask);
-//     res.send(result);
-//   } catch (error) {
-//     res.send({
-//       success: false,
-//       error: error.message
-//     })
-//   }
-// });
+    res.send(result);
 
+  } catch (error) {
+    res.send({
+      success: false,
+      error: error.message
+    })
+  }
+});
 
+// get comments
+app.get('/user/task/comments', async (req, res) => {
+  try {
+    const query = {};
+    const cursor = commentsCollection.find(query);
+    const result = await cursor.toArray();
+
+    res.send(result);
+
+  } catch (error) {
+    res.send({
+      success: false,
+      error: error.message
+    })
+  }
+})
 
 // default get
 app.get('/', (req, res) => {
