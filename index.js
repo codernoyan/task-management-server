@@ -73,11 +73,11 @@ app.get("/tasks", async (req, res) => {
 });
 
 // get completed tasks
-app.get('/tasks/completed/:email', async (req, res) => {
+app.get('/tasks/user/:email', async (req, res) => {
   try {
     const email = req.params.email;
-    const status = req.params.status;
-    const query = { status: 'completed', userEmail: email };
+    const status = req.query.status;
+    const query = { status: status, userEmail: email };
     const cursor = tasksCollection.find(query);
     const result = await cursor.toArray();
 
